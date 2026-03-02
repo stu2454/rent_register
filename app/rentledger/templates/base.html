@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en-AU"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Rent Ledger{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('main.static', filename='styles.css') }}">
+</head><body>
+<header class="header"><div class="wrap"><h1><a href="{{ url_for('main.index') }}">Rent Ledger</a></h1><nav>
+<a href="{{ url_for('main.index') }}">Home</a>
+<a href="{{ url_for('main.lease_page') }}">Lease</a>
+<a href="{{ url_for('main.payments') }}">Ledger</a>
+<a href="{{ url_for('main.export_csv') }}">Export CSV</a>
+</nav></div></header>
+<main class="wrap">
+{% with msgs = get_flashed_messages(with_categories=true) %}{% if msgs %}{% for c,m in msgs %}<div class="flash {{ c }}">{{ m }}</div>{% endfor %}{% endif %}{% endwith %}
+{% block content %}{% endblock %}
+</main>
+</body></html>

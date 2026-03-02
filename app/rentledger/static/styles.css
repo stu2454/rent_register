@@ -1,0 +1,12 @@
+body{font-family:Arial,Calibri,sans-serif;margin:0;background:#fff;color:#233} .wrap{width:min(1100px,94%);margin:0 auto;padding:1rem 0}
+.header{border-bottom:1px solid #e5e7eb;position:sticky;top:0;background:#fff}.header .wrap{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.85rem 0}
+.header a{text-decoration:none;color:#233}.header h1 a{color:#6A2875}.header nav{display:flex;gap:.8rem;flex-wrap:wrap}
+.card{border:1px solid #e5e7eb;border-radius:12px;padding:1rem;margin:.8rem 0;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:.8rem 1rem}.form label{display:flex;flex-direction:column;gap:.3rem;font-weight:600}.form .full{grid-column:1/-1}@media(max-width:760px){.form{grid-template-columns:1fr}}
+input,select,textarea{padding:.6rem .7rem;border:1px solid #cfd5dc;border-radius:10px;font:inherit}textarea{resize:vertical}
+.btn{display:inline-block;background:#6A2875;color:#fff;padding:.5rem .75rem;border-radius:10px;border:1px solid #6A2875;text-decoration:none;cursor:pointer;font:inherit}.btn.alt{background:#fff;color:#009CA6;border-color:#009CA6}.btn.small{padding:.3rem .45rem;border-radius:8px;font-size:.85rem}
+.flash{padding:.6rem .75rem;border-radius:10px;margin:.5rem 0;border:1px solid}.flash.success{background:#eefaf3;color:#0a7a3f;border-color:#b8e4c8}.flash.warning{background:#fff7eb;color:#a66300;border-color:#efd09b}.flash.danger{background:#fff2f1;color:#b42318;border-color:#f1bfb9}
+.scroll{overflow:auto}table{width:100%;min-width:980px;border-collapse:collapse}th,td{padding:.5rem;border-bottom:1px solid #e5e7eb;text-align:left;vertical-align:top}th{background:#f7f8fa}
+.filters{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;margin:.6rem 0}.chip{padding:.2rem .5rem;border:1px solid #cfd5dc;border-radius:999px;text-decoration:none;color:#233}.chip.active{background:#6A2875;color:#fff;border-color:#6A2875}
+.badge{padding:.15rem .4rem;border-radius:999px;border:1px solid #ddd;font-size:.8rem;text-transform:capitalize}.badge.paid{background:#eefaf3;color:#0a7a3f;border-color:#b8e4c8}.badge.due{background:#eefbfc;color:#007a82;border-color:#afe1e5}.badge.partial{background:#fff7eb;color:#a66300;border-color:#efd09b}.badge.overdue{background:#fff2f1;color:#b42318;border-color:#f1bfb9}

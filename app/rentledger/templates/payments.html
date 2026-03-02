@@ -1,0 +1,27 @@
+{% extends "base.html" %}{% block content %}
+<div class="card">
+<h2>Ledger</h2>
+<p>{{ lease.property_address }} · {{ lease.rent_amount|aud }} ({{ lease.frequency }})</p>
+<div class="filters">Filter:
+{% for opt in ['all','due','paid','partial','overdue'] %}
+<a class="chip {{ 'active' if status==opt else '' }}" href="{{ url_for('main.payments', status=opt) }}">{{ opt }}</a>
+{% endfor %}
+</div>
+<div class="scroll"><table>
+<thead><tr><th>Due</th><th>Period</th><th>Due amount</th><th>Paid date</th><th>Paid amount</th><th>Status</th><th>Bank ref</th><th>Running balance</th><th>Action</th></tr></thead>
+<tbody>
+{% for p,balance in ledger %}
+<tr>
+<td>{{ p.due_date }}</td><td>{{ p.period_start }} to {{ p.period_end }}</td><td>{{ p.amount_due|aud }}</td>
+<td>{{ p.date_paid or '' }}</td><td>{{ p.amount_paid|aud if p.amount_paid is not none else '' }}</td>
+<td><span class="badge {{ p.status }}">{{ p.status }}</span></td><td>{{ p.bank_reference or '' }}</td><td>{{ balance|aud }}</td>
+<td>
+<a class="btn small" href="{{ url_for('main.record', pid=p.id) }}">{{ 'Edit' if p.amount_paid is not none else 'Record' }}</a>
+{% if p.amount_paid is not none %}
+<form method="post" action="{{ url_for('main.clear', pid=p.id) }}" style="display:inline"><button class="btn alt small" type="submit">Clear</button></form>
+{% endif %}
+</td></tr>
+{% endfor %}
+</tbody></table></div>
+</div>
+{% endblock %}

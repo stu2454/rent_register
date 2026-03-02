@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% block content %}
+{% if not lease %}
+<div class="card"><h2>No lease yet</h2><p><a class="btn" href="{{ url_for('main.lease_page') }}">Set up lease</a></p></div>
+{% else %}
+<div class="grid2">
+<div class="card"><h2>Lease</h2>
+<p><strong>{{ lease.property_address }}</strong></p>
+<p>{{ lease.tenant_name }} · Landlord: {{ lease.landlord_name }}</p>
+<p>{{ lease.start_date }} to {{ lease.end_date }}</p>
+<p>{{ lease.rent_amount|aud }} ({{ lease.frequency }})</p>
+<a class="btn" href="{{ url_for('main.lease_page') }}">Edit lease</a>
+</div>
+<div class="card"><h2>Summary</h2>
+<p>Total due: <strong>{{ total_due|aud }}</strong></p>
+<p>Total paid: <strong>{{ total_paid|aud }}</strong></p>
+<p>Balance: <strong>{{ balance|aud }}</strong></p>
+<p>Entries: <strong>{{ rows|length }}</strong></p>
+<a class="btn" href="{{ url_for('main.payments') }}">Open ledger</a>
+</div></div>
+{% endif %}
+{% endblock %}

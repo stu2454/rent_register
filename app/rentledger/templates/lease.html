@@ -1,0 +1,25 @@
+{% extends "base.html" %}{% block content %}
+<div class="card"><h2>Lease details</h2>
+<form method="post" class="form">
+<label>Property address<input type="text" name="property_address" required value="{{ lease.property_address if lease else '' }}"></label>
+<label>Landlord name<input type="text" name="landlord_name" required value="{{ lease.landlord_name if lease else '' }}"></label>
+<label>Tenant name<input type="text" name="tenant_name" required value="{{ lease.tenant_name if lease else '' }}"></label>
+<label>Lease start date<input type="date" name="start_date" required value="{{ lease.start_date.isoformat() if lease else '' }}"></label>
+<label>Lease end date<input type="date" name="end_date" required value="{{ lease.end_date.isoformat() if lease else '' }}"></label>
+<label>Rent amount (AUD$)<input type="number" step="0.01" name="rent_amount" required value="{{ lease.rent_amount if lease else '' }}"></label>
+<label>Frequency<select name="frequency" required>
+{% set f = lease.frequency if lease else '' %}
+<option value="">Select</option><option value="weekly" {{ 'selected' if f=='weekly' else '' }}>Weekly</option><option value="fortnightly" {{ 'selected' if f=='fortnightly' else '' }}>Fortnightly</option><option value="monthly" {{ 'selected' if f=='monthly' else '' }}>Monthly</option>
+</select></label>
+<label>Bond amount (optional)<input type="number" step="0.01" name="bond_amount" value="{{ lease.bond_amount if lease and lease.bond_amount is not none else '' }}"></label>
+<label class="full">Notes<textarea name="notes" rows="3">{{ lease.notes if lease else '' }}</textarea></label>
+<div class="full"><button class="btn" type="submit">Save lease</button></div>
+</form></div>
+{% if lease %}
+<div class="card"><h2>Generate schedule</h2><p>Current ledger entries: {{ count }}</p>
+<form method="post" action="{{ url_for('main.generate') }}">
+<label><input type="checkbox" name="replace_existing"> Replace existing schedule</label>
+<div><button class="btn" type="submit">Generate payment schedule</button> <a class="btn alt" href="{{ url_for('main.payments') }}">Open ledger</a></div>
+</form></div>
+{% endif %}
+{% endblock %}

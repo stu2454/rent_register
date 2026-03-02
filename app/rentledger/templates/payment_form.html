@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block content %}
+<div class="card"><h2>Record payment</h2>
+<p>Due {{ payment.due_date }} · Period {{ payment.period_start }} to {{ payment.period_end }} · {{ payment.amount_due|aud }}</p>
+<form method="post" class="form">
+<label>Date paid<input type="date" name="date_paid" required value="{{ payment.date_paid.isoformat() if payment.date_paid else '' }}"></label>
+<label>Amount paid (AUD$)<input type="number" step="0.01" name="amount_paid" required value="{{ payment.amount_paid if payment.amount_paid is not none else payment.amount_due }}"></label>
+<label>Payment method<input type="text" name="payment_method" value="{{ payment.payment_method or 'bank transfer' }}"></label>
+<label>Bank reference<input type="text" name="bank_reference" value="{{ payment.bank_reference or '' }}"></label>
+<label>Transaction ID<input type="text" name="transaction_id" value="{{ payment.transaction_id or '' }}"></label>
+<label class="full">Notes<textarea name="notes" rows="3">{{ payment.notes or '' }}</textarea></label>
+<div class="full"><button class="btn" type="submit">Save payment</button> <a class="btn alt" href="{{ url_for('main.payments') }}">Back</a></div>
+</form></div>
+{% endblock %}

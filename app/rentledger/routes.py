@@ -1,7 +1,8 @@
 from datetime import datetime, date
 from decimal import Decimal, InvalidOperation
 import csv, io
-from flask import Blueprint, render_template, request, redirect, url_for, flash, Response
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, abort
+from flask_login import login_required, current_user
 from .extensions import db
 from .models import Lease, Payment
 from .utils import generate_schedule
@@ -32,8 +33,9 @@ def health():
     return {'status':'ok'}
 
 @bp.route('/')
+@login_required
 def index():
-    lease = Lease.query.order_by(Lease.id.desc()).first()
+    lease = Lease.query.filter_by(user_id=current_user.id).order_by(Lease.id.desc()).first()
     if not lease:
         return render_template('index.html', lease=None, rows=[])
     rows = Payment.query.filter_by(lease_id=lease.id).order_by(Payment.due_date.asc()).all()
@@ -44,8 +46,9 @@ def index():
     return render_template('index.html', lease=lease, rows=rows, total_due=total_due, total_paid=total_paid, balance=total_paid-total_due)
 
 @bp.route('/lease', methods=['GET','POST'])
+@login_required
 def lease_page():
-    lease = Lease.query.order_by(Lease.id.desc()).first()
+    lease = Lease.query.filter_by(user_id=current_user.id).order_by(Lease.id.desc()).first()
     if request.method == 'POST':
         try:
             data = dict(
@@ -67,7 +70,7 @@ def lease_page():
                 for k,v in data.items(): setattr(lease, k, v)
                 flash('Lease updated','success')
             else:
-                lease = Lease(**data)
+                lease = Lease(user_id=current_user.id, **data)
                 db.session.add(lease)
                 flash('Lease created','success')
             db.session.commit()
@@ -78,8 +81,9 @@ def lease_page():
     return render_template('lease.html', lease=lease, count=count)
 
 @bp.route('/schedule/generate', methods=['POST'])
+@login_required
 def generate():
-    lease = Lease.query.order_by(Lease.id.desc()).first()
+    lease = Lease.query.filter_by(user_id=current_user.id).order_by(Lease.id.desc()).first()
     if not lease:
         flash('Create lease first','danger')
         return redirect(url_for('main.lease_page'))
@@ -100,8 +104,9 @@ def generate():
     return redirect(url_for('main.payments'))
 
 @bp.route('/payments')
+@login_required
 def payments():
-    lease = Lease.query.order_by(Lease.id.desc()).first()
+    lease = Lease.query.filter_by(user_id=current_user.id).order_by(Lease.id.desc()).first()
     if not lease:
         return redirect(url_for('main.lease_page'))
     status = request.args.get('status','all')
@@ -123,8 +128,11 @@ def payments():
     return render_template('payments.html', lease=lease, ledger=ledger, status=status)
 
 @bp.route('/payments/<int:pid>/record', methods=['GET','POST'])
+@login_required
 def record(pid):
-    lease = Lease.query.order_by(Lease.id.desc()).first()
+    lease = Lease.query.filter_by(user_id=current_user.id).order_by(Lease.id.desc()).first()
+    if not lease:
+        abort(404)
     p = Payment.query.filter_by(id=pid, lease_id=lease.id).first_or_404()
     if request.method == 'POST':
         try:
@@ -143,8 +151,11 @@ def record(pid):
     return render_template('payment_form.html', payment=p)
 
 @bp.route('/payments/<int:pid>/clear', methods=['POST'])
+@login_required
 def clear(pid):
-    lease = Lease.query.order_by(Lease.id.desc()).first()
+    lease = Lease.query.filter_by(user_id=current_user.id).order_by(Lease.id.desc()).first()
+    if not lease:
+        abort(404)
     p = Payment.query.filter_by(id=pid, lease_id=lease.id).first_or_404()
     p.date_paid=None; p.amount_paid=None; p.bank_reference=None; p.transaction_id=None; p.notes=None; p.payment_method='bank transfer'
     p.recalc_status(); db.session.commit()
@@ -152,8 +163,9 @@ def clear(pid):
     return redirect(url_for('main.payments'))
 
 @bp.route('/export/csv')
+@login_required
 def export_csv():
-    lease = Lease.query.order_by(Lease.id.desc()).first()
+    lease = Lease.query.filter_by(user_id=current_user.id).order_by(Lease.id.desc()).first()
     if not lease:
         return redirect(url_for('main.lease_page'))
     rows = Payment.query.filter_by(lease_id=lease.id).order_by(Payment.due_date.asc()).all()

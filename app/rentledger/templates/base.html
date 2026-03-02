@@ -9,6 +9,7 @@
 <a href="{{ url_for('main.lease_page') }}">Lease</a>
 <a href="{{ url_for('main.payments') }}">Ledger</a>
 <a href="{{ url_for('main.export_csv') }}">Export CSV</a>
+{% if current_user.is_authenticated %}<span class="nav-user">{{ current_user.username }}</span><a href="{{ url_for('auth.users') }}">Users</a><a href="{{ url_for('auth.logout') }}">Logout</a>{% endif %}
 </nav></div></header>
 <main class="wrap">
 {% with msgs = get_flashed_messages(with_categories=true) %}{% if msgs %}{% for c,m in msgs %}<div class="flash {{ c }}">{{ m }}</div>{% endfor %}{% endif %}{% endwith %}

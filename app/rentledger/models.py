@@ -1,9 +1,28 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
 from .extensions import db
+
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'user'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(256), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    leases = db.relationship('Lease', back_populates='owner', cascade='all, delete-orphan')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
 
 class Lease(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     property_address = db.Column(db.String(255), nullable=False)
     landlord_name = db.Column(db.String(120), nullable=False)
     tenant_name = db.Column(db.String(120), nullable=False)
@@ -15,7 +34,9 @@ class Lease(db.Model):
     notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, server_default=db.func.now(), onupdate=db.func.now())
+    owner = db.relationship('User', back_populates='leases')
     payments = db.relationship('Payment', back_populates='lease', cascade='all, delete-orphan', order_by='Payment.due_date')
+
 
 class Payment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

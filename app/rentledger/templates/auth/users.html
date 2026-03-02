@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}Users – Rent Ledger{% endblock %}
+{% block content %}
+<h2>Users</h2>
+
+<div class="card" style="max-width:400px">
+  <h3>Create user</h3>
+  <form method="post">
+    <label>Username
+      <input type="text" name="username" required autofocus>
+    </label>
+    <label>Password
+      <input type="password" name="password" required>
+    </label>
+    <button type="submit" class="btn">Create</button>
+  </form>
+</div>
+
+<table style="margin-top:1.5rem">
+  <thead><tr><th>Username</th><th>Created</th><th></th></tr></thead>
+  <tbody>
+  {% for u in users %}
+  <tr>
+    <td>{{ u.username }}</td>
+    <td>{{ u.created_at.strftime('%d %b %Y') if u.created_at else '—' }}</td>
+    <td>
+      {% if u.id != current_user.id %}
+      <form method="post" action="{{ url_for('auth.delete_user', uid=u.id) }}" onsubmit="return confirm('Delete {{ u.username }}?')">
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+      {% else %}
+      <span style="color:#888">you</span>
+      {% endif %}
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

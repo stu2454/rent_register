@@ -1,40 +1,27 @@
-# Render Blueprint — SDA Calculator
-# Fix 1: Database moved to top-level 'databases:' block (correct Render Blueprint syntax)
-# Fix 2: Backend dockerContext changed from '.' to './backend' (so COPY *.py works correctly)
-
 databases:
-  - name: sda-calc-db
-    databaseName: sda_calc
-    user: sda_user
+  - name: rent-ledger-db
+    databaseName: rentledger
+    user: rentuser
     plan: free
     region: oregon
 
 services:
-  # FastAPI Backend
   - type: web
-    name: sda-calc-backend
+    name: rent-ledger
     env: docker
     plan: free
     region: oregon
-    dockerfilePath: ./backend/Dockerfile
-    dockerContext: ./backend # FIXED: was '.' — backend Dockerfile does COPY *.py so context must be ./backend
+    dockerfilePath: ./app/Dockerfile
+    dockerContext: ./app
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: sda-calc-db
+          name: rent-ledger-db
           property: connectionString
-    healthCheckPath: /api/v1/health
-
-  # React Frontend
-  - type: web
-    name: sda-calc-frontend
-    env: docker
-    plan: free
-    region: oregon
-    dockerfilePath: ./frontend/Dockerfile
-    dockerContext: ./frontend
-    dockerBuildArgs:
-      - VITE_API_URL=https://sda-calc-backend.onrender.com
-    envVars:
-      - key: VITE_API_URL
-        value: https://sda-calc-backend.onrender.com
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+    healthCheckPath: /

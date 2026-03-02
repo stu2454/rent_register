@@ -3,7 +3,7 @@
 Simple personal rent ledger app to track lease details, scheduled rent due, payments, and running balance.
 
 ## Stack
-- Flask + SQLAlchemy + Flask-Migrate
+- Flask + SQLAlchemy + Flask-Migrate + Flask-Login
 - Postgres (Docker locally, Render Postgres in production)
 - Docker / Docker Compose for local dev
 - Render Blueprint (`render.yaml`) for deployment
@@ -11,20 +11,27 @@ Simple personal rent ledger app to track lease details, scheduled rent due, paym
 ## Local setup (Docker)
 ```bash
 cp .env.example .env
+# Add ADMIN_USERNAME and ADMIN_PASSWORD to .env
 docker compose up --build
-# in a second terminal (first time only)
-docker compose exec web flask db upgrade
 ```
-Open http://localhost:5002
+Open http://localhost:5002 — migrations and admin user creation run automatically on startup.
 
 ## Render deploy (Blueprint)
 1. Push to GitHub.
 2. Render → New + → Blueprint → connect repo.
-3. After deploy, open shell and run:
+3. When prompted, set `ADMIN_USERNAME` and `ADMIN_PASSWORD` — these become your login credentials.
+
+Migrations run automatically on startup. The admin user is created on first boot if it doesn't exist yet.
+
+## Adding more users
 ```bash
-flask db upgrade
+# Local
+docker compose exec web flask create-user <username> <password>
+
+# Render — set ADMIN_USERNAME/ADMIN_PASSWORD for the first user;
+# additional users require shell access or a future admin UI.
 ```
 
 ## Notes
-- Starter app is single-user and has no login.
-- Add auth before broad/public use.
+- No public registration — users must be created via CLI.
+- Add HTTPS (Render provides it automatically) before sharing publicly.
